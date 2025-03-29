@@ -23,7 +23,7 @@ const HomeCategory = () => {
   const category = useSelector((state) => state.allCategory.category);
   const loading = useSelector((state) => state.allCategory.loading);
 
-  console.log(loading);
+  //   console.log(loading);
 
   const colors = [
     "#FFD3E8",
@@ -43,6 +43,7 @@ const HomeCategory = () => {
             category.data.slice(0, 6).map((item, index) => {
               return (
                 <CategoryCard
+                  key={index}
                   title={item.name}
                   img={item.image}
                   background={colors[index]}
