@@ -1,78 +1,18 @@
-import React, { useEffect, useState } from "react";
 import { Col, Row, Spinner } from "react-bootstrap";
-import avatar from "../../images/avatar.png";
-import { useSelector, useDispatch } from "react-redux";
-import { createCategory } from "../../redux/actions/categoryAction";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
+import { ToastContainer } from "react-toastify";
+import AddCategoryHook from "../../hook/category/add-category-hook";
 
 const AdminAddCategory = () => {
-  const dispatch = useDispatch();
-  const [img, setImg] = useState(avatar);
-  const [name, setName] = useState("");
-  const [selectedFile, setSelectedFile] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [isPress, setIsPress] = useState(false);
-
-  // To Get Loading State From Redux
-  // const loading = useSelector((state) => state.allCategory.loading);
-
-  // When Image Change Save It
-  const onImageChange = (e) => {
-    if (e.target.files && e.target.files[0]) {
-      setImg(URL.createObjectURL(e.target.files[0]));
-      selectedFile(setSelectedFile(e.target.files[0]));
-    }
-  };
-
-  const res = useSelector((state) => state.allCategory.category);
-
-  // Save Data In Database
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (name === "" || selectedFile === null) {
-      notify("من فضلك اكمل البيانات", "warning");
-      return;
-    }
-    const formData = new FormData();
-    formData.append("name", name);
-    formData.append("image", selectedFile);
-    // if (loading) {
-    //   console.log("جاري التحميل");
-    // }
-    setLoading(true);
-    setIsPress(true);
-    await dispatch(createCategory(formData));
-    setLoading(false);
-  };
-
-  useEffect(() => {
-    if (!loading) {
-      setImg(avatar);
-      setName("");
-      setSelectedFile(null);
-      console.log("تم الانتهاء");
-      setLoading(true);
-      setTimeout(() => setIsPress(false), 5000);
-      if (res.status === 201) {
-        notify("تمت الاضافه بنجاح", "success");
-      } else {
-        notify("هناك مشكلة في عملية الاضافة", "error");
-      }
-    }
-  }, [loading]);
-
-  const notify = (message, type) => {
-    if (type === "success") {
-      toast.success(message);
-    } else if (type === "warning") {
-      toast.warning(message);
-    } else if (type === "error") {
-      toast.error(message);
-    } else {
-      toast(message);
-    }
-  };
+  // Destruction The Code
+  const [
+    img,
+    name,
+    loading,
+    isPress,
+    handleSubmit,
+    onImageChange,
+    onChangeName,
+  ] = AddCategoryHook();
 
   return (
     <div>
@@ -101,7 +41,7 @@ const AdminAddCategory = () => {
           </div>
 
           <input
-            onChange={(e) => setName(e.target.value)}
+            onChange={onChangeName}
             value={name}
             type="text"
             className="input-form d-block mt-3 px-3"

@@ -1,38 +1,11 @@
-import baseUrl from "../../Api/baseUrl";
 // Components
 import CategoryContainer from "../../Components/Category/CategoryContainer";
 import Pagination from "../../Components/Uitily/Pagination";
-
-// Hooks
-import { useEffect } from "react";
-import { useSelector, useDispatch } from "react-redux";
-import {
-  getAllCategory,
-  getAllCategoryPage,
-} from "../../redux/actions/categoryAction";
+import AllCategoryPageHook from "../../hook/category/all-category-page-hook";
 
 const AllCategoryPage = () => {
-  const dispatch = useDispatch();
-
-  // When First Load The Page It Will Call The API To Get All Category
-  useEffect(() => {
-    dispatch(getAllCategory(8));
-  }, []);
-
-  // To Get Sate From Redux
-  const category = useSelector((state) => state.allCategory.category);
-  const loading = useSelector((state) => state.allCategory.loading);
-
-  //  Make It Work After Page Loading To Avoide The Undefined Error Because Of Delay Of Network (important)
-  let pageCount = 0;
-  if (category.paginationResult)
-    pageCount = category.paginationResult.numberOfPages;
-
-  // To Make Pagination Work And Get The Page Number
-  const getPage = (page) => {
-    dispatch(getAllCategoryPage(page));
-    // console.log(page);
-  };
+  // Destruction The Code
+  const [category, loading, pageCount, getPage] = AllCategoryPageHook();
 
   return (
     <div style={{ minHeight: "670px" }}>
