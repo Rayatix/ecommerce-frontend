@@ -16,7 +16,7 @@ const AllCategoryPage = () => {
 
   // When First Load The Page It Will Call The API To Get All Category
   useEffect(() => {
-    dispatch(getAllCategory(3));
+    dispatch(getAllCategory(8));
   }, []);
 
   // To Get Sate From Redux
