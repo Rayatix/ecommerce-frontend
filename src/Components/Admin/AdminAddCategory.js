@@ -3,6 +3,8 @@ import { Col, Row, Spinner } from "react-bootstrap";
 import avatar from "../../images/avatar.png";
 import { useSelector, useDispatch } from "react-redux";
 import { createCategory } from "../../redux/actions/categoryAction";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const AdminAddCategory = () => {
   const dispatch = useDispatch();
@@ -23,9 +25,15 @@ const AdminAddCategory = () => {
     }
   };
 
+  const res = useSelector((state) => state.allCategory.category);
+
   // Save Data In Database
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (name === "" || selectedFile === null) {
+      notify("من فضلك اكمل البيانات", "warning");
+      return;
+    }
     const formData = new FormData();
     formData.append("name", name);
     formData.append("image", selectedFile);
@@ -46,10 +54,25 @@ const AdminAddCategory = () => {
       console.log("تم الانتهاء");
       setLoading(true);
       setTimeout(() => setIsPress(false), 5000);
+      if (res.status === 201) {
+        notify("تمت الاضافه بنجاح", "success");
+      } else {
+        notify("هناك مشكلة في عملية الاضافة", "error");
+      }
     }
   }, [loading]);
 
-  //   headers: {"Content-Type": "multipart/form-data"}
+  const notify = (message, type) => {
+    if (type === "success") {
+      toast.success(message);
+    } else if (type === "warning") {
+      toast.warning(message);
+    } else if (type === "error") {
+      toast.error(message);
+    } else {
+      toast(message);
+    }
+  };
 
   return (
     <div>
@@ -102,6 +125,17 @@ const AdminAddCategory = () => {
           <h4>تم الانتهاء</h4>
         )
       ) : null}
+      <ToastContainer
+        position="top-right"
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={true}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
     </div>
   );
 };
