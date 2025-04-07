@@ -1,7 +1,7 @@
 // Hooks
 import { useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
-import { getAllBrand } from "../../redux/actions/brandActtion";
+import { getAllBrand } from "../../redux/actions/brandAction";
 
 const HomeBrandHook = () => {
   const dispatch = useDispatch();
