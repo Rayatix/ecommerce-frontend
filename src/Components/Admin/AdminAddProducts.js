@@ -7,12 +7,16 @@ import MultiImageInput from "react-multiple-image-input";
 import { useSelector, useDispatch } from "react-redux";
 import { getAllCategory } from "../../redux/actions/categoryAction";
 import { getAllBrand } from "../../redux/actions/brandAction";
+import { getOneCategory } from "../../redux/actions/subcategoryAction";
 
 // import { SketchPicker } from "react-color";
 import { CompactPicker } from "react-color";
 
 // For Notification Information
 import notify from "../../hook/useNotification";
+import { createProduct } from "../../redux/actions/productsAction";
+
+import { ToastContainer } from "react-toastify";
 
 const AdminAddProducts = () => {
   // Redux
@@ -33,13 +37,19 @@ const AdminAddProducts = () => {
   // Get Last Category State From Redux
   const brand = useSelector((state) => state.allBrand.brand);
 
-  const onSelect = () => {};
-  const onRemove = () => {};
+  // Get Last SUB Category State From Redux
+  const subCategory = useSelector((state) => state.subCategory.subcategory);
 
-  const options = [
-    { name: "التصنيف الاول", id: 1 },
-    { name: "التصنيف الثاني", id: 2 },
-  ];
+  const onSelect = (selectedList) => {
+    // console.log(seletedSubID);
+    setSeletedSubID(selectedList);
+  };
+
+  const onRemove = (selectedList) => {
+    setSeletedSubID(selectedList);
+  };
+
+  const [options, setOptions] = useState([]);
 
   // Values Image Product
   const [images, setImages] = useState([]);
@@ -55,6 +65,7 @@ const AdminAddProducts = () => {
   const [BrandID, setBrandID] = useState("");
   const [subCatID, setSubCatID] = useState([]);
   const [seletedSubID, setSeletedSubID] = useState([]);
+  const [loading, setLoading] = useState(true);
 
   // To Show And Hide The Color Picker
   const [showColor, setShowColor] = useState(false);
@@ -74,16 +85,136 @@ const AdminAddProducts = () => {
   };
 
   // When Select Category Store ID
-  const onSelectCategory = (e) => {
-    setCatID(e.target.value);
+  const onSelectCategory = async (e) => {
+    const selectedValue = e.target.value;
+
+    try {
+      if (selectedValue !== 0) {
+        // Using strict inequality and comparing with string if value is from select
+        await dispatch(getOneCategory(selectedValue));
+      }
+      setCatID(selectedValue);
+    } catch (error) {
+      console.error("Error fetching category:", error);
+      // Optionally handle the error in UI
+    }
   };
+
+  //   const onSelectCategory = (e) => {
+  //     if (e.target.value !== 0) {
+  //       dispatch(getOneCategory(e.target.value));
+  //     }
+  //     setCatID(e.target.value);
+  //   };
+  console.log(CatID);
+
+  useEffect(() => {
+    if (CatID !== 0) {
+      if (subCategory.data) {
+        setOptions(subCategory.data);
+      }
+    }
+  }, [CatID]);
+
+  //   useEffect(() => {
+  //     if (CatID !== 0 && subCategory?.data) {
+  //       setOptions(subCategory.data);
+  //     }
+  //   }, [CatID, subCategory]);
+
   //   console.log(CatID);
 
   // When Select Brand Store ID
   const onSelectBrand = (e) => {
     setBrandID(e.target.value);
   };
-  console.log(BrandID);
+  //   console.log(BrandID);
+
+  // To Convert Base64 To File
+  function dataURLtoFile(dataUrl, filename) {
+    var arr = dataUrl.split(","),
+      mime = arr[0].match(/:(.*?);/)[1],
+      bstr = atob(arr[1]),
+      n = bstr.length,
+      u8arr = new Uint8Array(n);
+    while (n--) {
+      u8arr[n] = bstr.charCodeAt(n);
+    }
+    return new File([u8arr], filename, { type: mime });
+  }
+
+  // To Save Data
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (
+      CatID === 0 ||
+      productName === "" ||
+      productDescription === "" ||
+      images.length >= 0 ||
+      priceBefore <= 0
+    ) {
+      notify("من فضلك تأكد من ادخال جميع البيانات", "warning");
+      return;
+    }
+
+    const formData = new FormData(); // صيغية بتمكني اني ابعت صور للسيرفر
+    // Convert Base 64 Image To File
+    const imgCover = dataURLtoFile(images[0], Math.random() + ".png");
+    // Convert Array OF Base 64 Image To File
+    const itemImages = Array.from(Array(Object.keys(images).length).keys()).map(
+      (item, index) => {
+        return dataURLtoFile(images[index], Math.random() + ".png");
+      }
+    );
+
+    formData.append("title", productName);
+    formData.append("description", productDescription);
+    formData.append("quantity", qty);
+    formData.append("price", priceBefore);
+    formData.append("imageCover", imgCover);
+    formData.append("category", CatID);
+    formData.append("brand", BrandID);
+
+    itemImages.map((item) => formData.append("images", item));
+    colors.map((color) => formData.append("availableColors", color));
+    seletedSubID.map((item) => formData.append("subcategory", item._id));
+
+    setLoading(true);
+    await dispatch(createProduct(formData));
+    setLoading(false);
+  };
+
+  const products = useSelector((state) => state.allproducts.products);
+  console.log(products);
+
+  useEffect(() => {
+    if (loading === false) {
+      // Reset all form states
+      setCatID(0);
+      setColors([]);
+      setImages([]);
+      setProductDescription("");
+      setPriceBefore("");
+      setPriceAfter("");
+      setProductName("");
+      setQty("");
+      setBrandID("");
+      setSeletedSubID([]);
+      setOptions([]);
+
+      // Remove this line to prevent infinite loop
+      setTimeout(() => setLoading(true), 3000);
+
+      if (products) {
+        if (products.status === 201) {
+          notify("تمت الاضافة بنجاح", "success");
+        } else {
+          notify("هناك مشكلة في عملية الأضافة", "error");
+        }
+      }
+    }
+  }, [loading]); // Only run when loading changes
 
   return (
     <div>
@@ -143,7 +274,6 @@ const AdminAddProducts = () => {
 
           <select
             name="cat"
-            value={CatID}
             onChange={onSelectCategory}
             className="select input-form-area mt-3 px-2 "
           >
@@ -221,11 +351,16 @@ const AdminAddProducts = () => {
           </div>
         </Col>
       </Row>
+
       <Row>
         <Col sm="8" className="d-flex justify-content-end ">
-          <button className="btn-save d-inline mt-2 ">حفظ التعديلات</button>
+          <button onClick={handleSubmit} className="btn-save d-inline mt-2 ">
+            حفظ التعديلات
+          </button>
         </Col>
       </Row>
+
+      <ToastContainer />
     </div>
   );
 };
