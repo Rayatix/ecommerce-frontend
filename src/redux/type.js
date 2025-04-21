@@ -9,4 +9,7 @@ export const GET_SUB_CATEGORY = "GET_SUB_CATEGORY";
 
 export const CREATE_PRODUCTS = "CREATE_PRODUCTS";
 
+// Auth
+export const CREATE_NEW_USER = "CREATE_NEW_USER";
+
 export const GET_ERROR = "GET_ERROR";
