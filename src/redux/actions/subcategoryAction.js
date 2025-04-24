@@ -1,5 +1,5 @@
 import { CREATE_SUB_CATEGORY, GET_SUB_CATEGORY, GET_ERROR } from "../type";
-import useGetData from "../../hooks/useGetData";
+import { useGetData } from "../../hooks/useGetData";
 import { useInsertData } from "../../hooks/useInsertData";
 
 // Create Sub Category with Pagination

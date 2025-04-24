@@ -13,4 +13,6 @@ export const CREATE_PRODUCTS = "CREATE_PRODUCTS";
 export const CREATE_NEW_USER = "CREATE_NEW_USER";
 export const LOGIN_USER = "LOGIN_USER";
 
+export const GET_CURRENT_USER = "GET_CURRENT_USER"; // Sec Way
+
 export const GET_ERROR = "GET_ERROR";

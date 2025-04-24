@@ -1,5 +1,6 @@
-import { CREATE_NEW_USER, LOGIN_USER } from "../type";
+import { CREATE_NEW_USER, LOGIN_USER, GET_CURRENT_USER } from "../type";
 import { useInsertData } from "../../hooks/useInsertData";
+import { useGetDataToken } from "../../hooks/useGetData";
 
 // Create New User
 export const createNewUser = (data) => async (dispatch) => {
@@ -30,6 +31,23 @@ export const loginUser = (data) => async (dispatch) => {
   } catch (e) {
     dispatch({
       type: LOGIN_USER,
+      payload: e.response,
+    });
+  }
+};
+
+// Get Logged User
+export const getLoggedUser = () => async (dispatch) => {
+  try {
+    const response = await useGetDataToken(`/api/v1/users/getMe`);
+    dispatch({
+      type: GET_CURRENT_USER,
+      payload: response,
+      loading: true,
+    });
+  } catch (e) {
+    dispatch({
+      type: GET_CURRENT_USER,
       payload: e.response,
     });
   }

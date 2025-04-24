@@ -45,17 +45,20 @@ const LoginHook = () => {
     if (res && res.data) {
       if (res.data.token) {
         localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.data)); // (first way)
         // console.log("Token stored:", res.data.token);
         notify("تمت عملية التسجيل بنجاح", "success");
 
         setTimeout(() => {
-          navigate("/");
+          //   navigate("/");
+          window.location.href = "/"; // for redirect after login and refresh the page
         }, 2000);
 
         // You might want to redirect here
         // window.location.href = '/';
       } else {
         localStorage.removeItem("token");
+        localStorage.removeItem("user"); // (first way);
         notify("البريد الإلكتروني أو كلمة المرور غير صحيحة", "error");
       }
 

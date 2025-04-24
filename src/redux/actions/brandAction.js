@@ -1,5 +1,5 @@
 import { GET_ALL_BRAND, GET_ERROR, CREATE_BRAND } from "../type";
-import useGetData from "../../hooks/useGetData";
+import { useGetData } from "../../hooks/useGetData";
 import { useInsertDataWithImage } from "../../hooks/useInsertData";
 
 // Get All Brand
